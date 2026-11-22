@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Lab Equipment Management System</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo-icon">🔬</div>
+        <div>
+          <h2>SmartLab OS</h2>
+          <span class="subtext">Inventory & AI Maintenance</span>
+        </div>
+      </div>
+
+      <nav class="nav-links">
+        <button class="nav-btn active" data-tab="catalog">
+          <span class="icon">📦</span> Equipment Catalog
+        </button>
+        <button class="nav-btn" data-tab="lowstock">
+          <span class="icon">⚠️</span> Low-Stock Alerts <span class="badge" id="lowStockBadge">0</span>
+        </button>
+        <button class="nav-btn" data-tab="summary">
+          <span class="icon">📊</span> Category Summary
+        </button>
+        <button class="nav-btn" data-tab="assignments">
+          <span class="icon">🎓</span> Issue & Assignments
+        </button>
+        <button class="nav-btn" data-tab="repairs">
+          <span class="icon">🛠️</span> Repair History
+        </button>
+        <button class="nav-btn" data-tab="damaged">
+          <span class="icon">📉</span> Frequently Damaged
+        </button>
+        <button class="nav-btn highlight-btn" data-tab="ai">
+          <span class="icon">🤖</span> AI Predictive Health
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="academic-tag">
+          <strong>Web Dev III - Unit 3</strong>
+          <small>Assignment 3 Backend</small>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top Header -->
+      <header class="top-bar">
+        <div>
+          <h1 id="pageTitle">Equipment Catalog</h1>
+          <p class="subtitle" id="pageSubtitle">Manage laboratory computers, projectors, keyboards, and testing gear.</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-outline" id="refreshBtn">🔄 Refresh Data</button>
+          <button class="btn btn-primary" id="openAddModalBtn">+ Register Equipment</button>
+        </div>
+      </header>
+
+      <!-- KPI Overview Cards -->
+      <section class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-icon blue">📦</div>
+          <div>
+            <span class="kpi-label">Total Equipment Types</span>
+            <h3 class="kpi-val" id="statTotalItems">--</h3>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon green">🔢</div>
+          <div>
+            <span class="kpi-label">Total Inventory Units</span>
+            <h3 class="kpi-val" id="statTotalUnits">--</h3>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon purple">💰</div>
+          <div>
+            <span class="kpi-label">Total Asset Valuation</span>
+            <h3 class="kpi-val" id="statTotalValue">₹0</h3>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon red">⚠️</div>
+          <div>
+            <span class="kpi-label">Low Stock Alerts</span>
+            <h3 class="kpi-val" id="statLowStock">--</h3>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab 1: Equipment Catalog -->
+      <section class="tab-pane active" id="tab-catalog">
+        <div class="filter-bar">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="Search by name, SKU, category, or supplier...">
+          </div>
+          <div class="filter-controls">
+            <select id="categoryFilter">
+              <option value="">All Categories</option>
+            </select>
+            <select id="statusFilter">
+              <option value="">All Statuses</option>
+              <option value="available">Available</option>
+              <option value="issued">Issued</option>
+              <option value="damaged">Damaged</option>
+              <option value="maintenance">Maintenance</option>
+            </select>
+            <select id="sortSelect">
+              <option value="createdAt:desc">Newest First</option>
+              <option value="price:desc">Price: High to Low</option>
+              <option value="price:asc">Price: Low to High</option>
+              <option value="quantity:asc">Quantity: Low to High</option>
+              <option value="quantity:desc">Quantity: High to Low</option>
+              <option value="name:asc">Name: A-Z</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table" id="productsTable">
+            <thead>
+              <tr>
+                <th>Equipment / Name</th>
+                <th>Unique SKU</th>
+                <th>Category</th>
+                <th>Unit Price</th>
+                <th>In Stock</th>
+                <th>Reorder Level</th>
+                <th>Total Stock Value</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="productsTableBody">
+              <tr><td colspan="9" class="loading-cell">Loading equipment data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination Bar -->
+        <div class="pagination-bar">
+          <span id="pageInfo">Showing 0 of 0 items</span>
+          <div class="pagination-buttons">
+            <button class="btn btn-sm btn-outline" id="prevPageBtn" disabled>« Previous</button>
+            <span id="currentPageDisplay" class="page-num">1</span>
+            <button class="btn btn-sm btn-outline" id="nextPageBtn" disabled>Next »</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab 2: Low-Stock Alerts -->
+      <section class="tab-pane" id="tab-lowstock">
+        <div class="section-notice warning-notice">
+          <strong>⚠️ Critical Inventory Warning:</strong> The following items have fallen below their configured safe reorder threshold (<code>quantity &le; reorderLevel</code>). Restock promptly.
+        </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>SKU</th>
+                <th>Equipment Name</th>
+                <th>Category</th>
+                <th>Current Stock</th>
+                <th>Safe Reorder Level</th>
+                <th>Deficit</th>
+                <th>Supplier</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="lowStockTableBody">
+              <tr><td colspan="8" class="loading-cell">Loading alerts...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Tab 3: Category Summary (Aggregation) -->
+      <section class="tab-pane" id="tab-summary">
+        <div class="section-intro">
+          <p>Real-time aggregated analytics computed via MongoDB Aggregation Pipeline (<code>$group</code>, <code>$project</code>, <code>$sort</code>).</p>
+        </div>
+        <div class="grid-two-col" id="categorySummaryGrid">
+          <!-- Populated by JS -->
+        </div>
+      </section>
+
+      <!-- Tab 4: Student & Faculty Assignments -->
+      <section class="tab-pane" id="tab-assignments">
+        <div class="toolbar-split">
+          <h3>Active Checkouts & Equipment Loans</h3>
+          <button class="btn btn-primary" id="openIssueModalBtn">+ Issue Equipment to Student / Faculty</button>
+        </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>SKU</th>
+                <th>Equipment Name</th>
+                <th>Borrower</th>
+                <th>Role</th>
+                <th>Department</th>
+                <th>Lab Room</th>
+                <th>Issued On</th>
+                <th>Return Due Date</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="assignmentsTableBody">
+              <tr><td colspan="10" class="loading-cell">Loading active assignments...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Tab 5: Repair History -->
+      <section class="tab-pane" id="tab-repairs">
+        <div class="toolbar-split">
+          <h3>Laboratory Equipment Repair Logs</h3>
+          <button class="btn btn-primary" id="openRepairModalBtn">+ Log Repair / Fault</button>
+        </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Reported Date</th>
+                <th>SKU</th>
+                <th>Equipment Name</th>
+                <th>Damage Type</th>
+                <th>Issue Description</th>
+                <th>Repair Cost</th>
+                <th>Technician</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="repairsTableBody">
+              <tr><td colspan="9" class="loading-cell">Loading repair history...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Tab 6: Frequently Damaged Equipment (Aggregation) -->
+      <section class="tab-pane" id="tab-damaged">
+        <div class="section-intro">
+          <p>Aggregated frequency analysis identifying high-maintenance equipment by incident count and cumulative repair expenditures.</p>
+        </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>SKU</th>
+                <th>Equipment Name</th>
+                <th>Category</th>
+                <th>Damage Incidents</th>
+                <th>Total Repair Cost</th>
+                <th>Average Repair Cost</th>
+                <th>Common Failure Types</th>
+                <th>Last Incident</th>
+              </tr>
+            </thead>
+            <tbody id="damagedTableBody">
+              <tr><td colspan="9" class="loading-cell">Analyzing repair records...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Tab 7: AI Predictive Maintenance Engine -->
+      <section class="tab-pane" id="tab-ai">
+        <div class="ai-banner">
+          <div class="ai-header-content">
+            <span class="ai-badge">SMARTLAB AI ENGINE</span>
+            <h2>Predictive Maintenance & Failure Risk Intelligence</h2>
+            <p>Our machine learning heuristic engine analyzes equipment MTBF (Mean Time Between Failures), wear-and-tear velocity, repair history, usage cycles, and economic depreciation ratios to forecast failure probability before equipment breaks down in lectures.</p>
+          </div>
+          <div class="ai-stats-bar" id="aiRiskSummary">
+            <div class="ai-stat-box red-glow">
+              <span class="ai-stat-num" id="aiCriticalCount">0</span>
+              <span class="ai-stat-label">Critical Risk</span>
+            </div>
+            <div class="ai-stat-box orange-glow">
+              <span class="ai-stat-num" id="aiHighCount">0</span>
+              <span class="ai-stat-label">High Risk</span>
+            </div>
+            <div class="ai-stat-box yellow-glow">
+              <span class="ai-stat-num" id="aiModerateCount">0</span>
+              <span class="ai-stat-label">Moderate</span>
+            </div>
+            <div class="ai-stat-box green-glow">
+              <span class="ai-stat-num" id="aiLowCount">0</span>
+              <span class="ai-stat-label">Healthy</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="predictions-grid" id="aiPredictionsContainer">
+          <!-- Cards injected via JS -->
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- MODAL: Add / Edit Equipment -->
+  <div class="modal-overlay" id="productModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="productModalTitle">Register New Equipment</h3>
+        <button class="close-btn" data-close="productModal">&times;</button>
+      </div>
+      <form id="productForm">
+        <input type="hidden" id="prodEditId">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Equipment / Item Name *</label>
+            <input type="text" id="prodName" required placeholder="e.g. Dell OptiPlex 7090 Desktop">
+          </div>
+          <div class="form-group">
+            <label>Unique SKU / ID *</label>
+            <input type="text" id="prodSku" required placeholder="e.g. LAB-PC-901">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Category *</label>
+            <input type="text" id="prodCategory" required placeholder="e.g. Computers, Projectors, Keyboards">
+          </div>
+          <div class="form-group">
+            <label>Supplier / Vendor *</label>
+            <input type="text" id="prodSupplier" required placeholder="e.g. Dell Enterprise India">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Unit Price (₹) *</label>
+            <input type="number" id="prodPrice" min="0" step="0.01" required placeholder="e.g. 55000">
+          </div>
+          <div class="form-group">
+            <label>Initial Quantity *</label>
+            <input type="number" id="prodQuantity" min="0" required placeholder="e.g. 15">
+          </div>
+          <div class="form-group">
+            <label>Reorder Level *</label>
+            <input type="number" id="prodReorderLevel" min="0" required placeholder="e.g. 4">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Lab Location</label>
+            <input type="text" id="prodLabLocation" placeholder="e.g. Lab 301 - Main Hardware Wing">
+          </div>
+          <div class="form-group">
+            <label>Serial / Batch Number</label>
+            <input type="text" id="prodSerialNumber" placeholder="e.g. SN-9941-XYZ">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close="productModal">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveProductBtn">Save Equipment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Adjust Stock -->
+  <div class="modal-overlay" id="stockModal">
+    <div class="modal-box modal-sm">
+      <div class="modal-header">
+        <h3>Adjust Stock Level</h3>
+        <button class="close-btn" data-close="stockModal">&times;</button>
+      </div>
+      <form id="stockForm">
+        <input type="hidden" id="stockProdId">
+        <p class="modal-desc" id="stockProdName">Item Name</p>
+        <div class="form-group">
+          <label>Stock Change (Positive to restock, Negative to deduct) *</label>
+          <input type="number" id="stockChangeInput" required placeholder="e.g. 10 or -2">
+          <small class="helper-text">Current quantity: <span id="currentStockVal" class="text-bold">0</span></small>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close="stockModal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Update Stock</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Issue Equipment to Student / Faculty -->
+  <div class="modal-overlay" id="issueModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Issue Equipment</h3>
+        <button class="close-btn" data-close="issueModal">&times;</button>
+      </div>
+      <form id="issueForm">
+        <div class="form-group">
+          <label>Select Equipment to Issue *</label>
+          <select id="issueEquipmentSelect" required>
+            <option value="">Choose available equipment...</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Borrower Name *</label>
+            <input type="text" id="issueBorrowerName" required placeholder="e.g. Aarav Sharma">
+          </div>
+          <div class="form-group">
+            <label>Borrower ID / Roll No *</label>
+            <input type="text" id="issueBorrowerId" required placeholder="e.g. STU-CS-2024-041">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Role *</label>
+            <select id="issueBorrowerRole" required>
+              <option value="Student">Student</option>
+              <option value="Faculty">Faculty</option>
+              <option value="Staff">Staff</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Department *</label>
+            <input type="text" id="issueDepartment" required placeholder="e.g. Computer Science">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Assigned Lab / Classroom</label>
+            <input type="text" id="issueLabRoom" placeholder="e.g. Lab 301">
+          </div>
+          <div class="form-group">
+            <label>Expected Return Date *</label>
+            <input type="date" id="issueExpectedReturn" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Remarks / Purpose</label>
+          <textarea id="issueRemarks" rows="2" placeholder="e.g. Project practical experiment"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close="issueModal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Confirm Issue</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Return Equipment -->
+  <div class="modal-overlay" id="returnModal">
+    <div class="modal-box modal-sm">
+      <div class="modal-header">
+        <h3>Process Equipment Return</h3>
+        <button class="close-btn" data-close="returnModal">&times;</button>
+      </div>
+      <form id="returnForm">
+        <input type="hidden" id="returnAssignmentId">
+        <p class="modal-desc" id="returnDesc">Returning item...</p>
+        <div class="form-group">
+          <label>Physical Condition Upon Return *</label>
+          <select id="returnConditionSelect" required>
+            <option value="Good">Good Condition (Clean & Functional)</option>
+            <option value="Damaged">Damaged / Faulty (Send to Repair)</option>
+            <option value="Needs Maintenance">Needs Maintenance (Dust/Drift)</option>
+          </select>
+        </div>
+        <div class="form-group" id="damageFields" style="display: none;">
+          <label>Damage Description</label>
+          <input type="text" id="damageDescInput" placeholder="e.g. Cracked display, burnt cable">
+          <label style="margin-top: 8px;">Estimated Repair Cost (₹)</label>
+          <input type="number" id="damageCostInput" placeholder="0">
+        </div>
+        <div class="form-group">
+          <label>Return Remarks</label>
+          <textarea id="returnRemarks" rows="2" placeholder="Inspection notes..."></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close="returnModal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Accept Return</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Log Repair -->
+  <div class="modal-overlay" id="repairModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Log Equipment Repair / Fault</h3>
+        <button class="close-btn" data-close="repairModal">&times;</button>
+      </div>
+      <form id="repairForm">
+        <div class="form-group">
+          <label>Select Equipment *</label>
+          <select id="repairEquipmentSelect" required>
+            <option value="">Select equipment...</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Damage / Failure Type *</label>
+            <select id="repairDamageType" required>
+              <option value="Component Breakdown">Component Breakdown</option>
+              <option value="Electrical Failure">Electrical Failure</option>
+              <option value="Accidental Damage">Accidental Damage</option>
+              <option value="Wear and Tear">Wear and Tear</option>
+              <option value="Software/Firmware Issue">Software/Firmware Issue</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Estimated / Incurred Repair Cost (₹) *</label>
+            <input type="number" id="repairCost" min="0" required placeholder="e.g. 2500">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Technician / Service Agency</label>
+            <input type="text" id="repairTechnician" placeholder="Campus IT Lab Support">
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select id="repairStatus">
+              <option value="Reported">Reported</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Fault & Issue Description *</label>
+          <textarea id="repairDescription" rows="3" required placeholder="Describe what went wrong..."></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close="repairModal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Repair Record</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

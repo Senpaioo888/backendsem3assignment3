@@ -20,6 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Serve static frontend assets for interactive lab management dashboard
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname));
 
 // Primary API Routes - Supports both /api/products (as requested in Assignment 3 PDF)
 // and /api/equipment for lab equipment naming convention
