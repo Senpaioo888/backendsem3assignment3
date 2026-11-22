@@ -1,0 +1,27 @@
+{
+  "name": "smart-lab-equipment-management",
+  "version": "1.0.0",
+  "description": "Smart Lab Equipment & Inventory Management System with AI Predictive Maintenance",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "seed": "node utils/seed.js"
+  },
+  "keywords": [
+    "inventory",
+    "lab-equipment",
+    "smart-lab",
+    "express",
+    "mongoose",
+    "mongodb"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "dotenv": "^18.0.10",
+    "express": "^5.3.0",
+    "mongoose": "^9.12.3"
+  }
+}

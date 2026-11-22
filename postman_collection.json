@@ -1,0 +1,258 @@
+{
+  "info": {
+    "name": "Smart Lab Equipment & Inventory Management API",
+    "description": "Postman Collection for Web Dev III Unit 3 Assignment 3 & Smart Lab Equipment Management System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Create Product (POST /api/products)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Gel Pen Pack of 15\",\n  \"sku\": \"STNY-PN-713\",\n  \"category\": \"Stationery\",\n  \"price\": 120,\n  \"quantity\": 40,\n  \"reorderLevel\": 20,\n  \"supplier\": \"Cello Pens\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/products",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "products"]
+        }
+      }
+    },
+    {
+      "name": "2. Get All Products (GET /api/products)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/products?page=1&limit=10",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "products"],
+          "query": [
+            { "key": "page", "value": "1" },
+            { "key": "limit", "value": "10" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "3. Get All Products Filtered & Sorted",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/products?category=Computers&sortBy=price&order=desc",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "products"],
+          "query": [
+            { "key": "category", "value": "Computers" },
+            { "key": "sortBy", "value": "price" },
+            { "key": "order", "value": "desc" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "4. Get Single Product by ID or SKU",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/products/LAB-PC-701",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "products", "LAB-PC-701"]
+        }
+      }
+    },
+    {
+      "name": "5. Update Product (PUT /api/products/:id)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Gel Pen Pack of 15\",\n  \"sku\": \"STNY-PN-713\",\n  \"category\": \"Stationery\",\n  \"price\": 140,\n  \"quantity\": 60\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/products/STNY-PN-713",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "products", "STNY-PN-713"]
+        }
+      }
+    },
+    {
+      "name": "6. Adjust Stock (PATCH /api/products/:id/stock)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"change\": 10\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/products/FURN-TB-812/stock",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "products", "FURN-TB-812", "stock"]
+        }
+      }
+    },
+    {
+      "name": "7. Low-Stock Alert Report (GET /api/products/low-stock)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/products/low-stock",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "products", "low-stock"]
+        }
+      }
+    },
+    {
+      "name": "8. Category Summary Aggregation (GET /api/products/summary)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/products/summary",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "products", "summary"]
+        }
+      }
+    },
+    {
+      "name": "9. Delete Product (DELETE /api/products/:id)",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/products/STNY-PN-713",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "products", "STNY-PN-713"]
+        }
+      }
+    },
+    {
+      "name": "10. Issue Equipment to Student / Faculty",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"equipmentId\": \"LAB-PC-701\",\n  \"borrowerName\": \"Tanmay Patil\",\n  \"borrowerId\": \"STU-CS-2024-089\",\n  \"borrowerRole\": \"Student\",\n  \"department\": \"Computer Science\",\n  \"labRoom\": \"Lab 301\",\n  \"expectedReturnDate\": \"2026-12-05\",\n  \"remarks\": \"Required for Machine Learning Lab Exam\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/assignments/issue",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "assignments", "issue"]
+        }
+      }
+    },
+    {
+      "name": "11. Get Active Equipment Loans",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/assignments/active",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "assignments", "active"]
+        }
+      }
+    },
+    {
+      "name": "12. Log Equipment Repair / Damage",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"equipmentId\": \"LAB-PROJ-101\",\n  \"issueDescription\": \"HDMI display flickering and lens focus ring stuck\",\n  \"damageType\": \"Component Breakdown\",\n  \"repairCost\": 3500,\n  \"technician\": \"Campus IT Lab Support\",\n  \"status\": \"Reported\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/repairs",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "repairs"]
+        }
+      }
+    },
+    {
+      "name": "13. Frequently Damaged Equipment Report (Aggregation)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/reports/frequently-damaged",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "reports", "frequently-damaged"]
+        }
+      }
+    },
+    {
+      "name": "14. Equipment Usage Report (Aggregation)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/reports/usage",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "reports", "usage"]
+        }
+      }
+    },
+    {
+      "name": "15. AI Predictive Maintenance Analysis",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/ai/predictive-maintenance",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "ai", "predictive-maintenance"]
+        }
+      }
+    }
+  ]
+}
